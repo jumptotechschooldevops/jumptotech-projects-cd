@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: task-manager-api
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/jumptotechschooldevops/task-manager-api-helm.git
+    targetRevision: main
+    path: task-manager-api
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: task-app
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
