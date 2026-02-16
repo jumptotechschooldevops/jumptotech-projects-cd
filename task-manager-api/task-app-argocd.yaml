@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/jumptotechschooldevops/task-manager-api-helm.git
+    repoURL: https://github.com/jumptotechschooldevops/jumptotech-projects-cd.git
     targetRevision: main
     path: task-manager-api
 
@@ -19,4 +19,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
