@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "task-manager-api.fullname" . }}
-  labels:
-    {{- include "task-manager-api.labels" . | nindent 4 }}
+  name: task-manager-api
+  namespace: {{ .Release.Namespace }}
 spec:
   type: {{ .Values.service.type }}
+
+  selector:
+    app: task-manager-api
+
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
-      name: http
-  selector:
-    {{- include "task-manager-api.selectorLabels" . | nindent 4 }}
+

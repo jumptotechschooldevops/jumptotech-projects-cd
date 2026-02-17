@@ -2,10 +2,13 @@ replicaCount: 2
 
 image:
   repository: aisalkyn85/task-manager-api
-  tag: "6"
+  tag: "1"
   pullPolicy: Always
 
-springProfile: "prod"
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8080
 
 resources:
   limits:
