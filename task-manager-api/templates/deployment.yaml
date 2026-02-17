@@ -2,11 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: task-manager-api
-  namespace: {{ .Release.Namespace }}
   labels:
     app: task-manager-api
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 2
 
   selector:
     matchLabels:
@@ -20,33 +19,30 @@ spec:
     spec:
       containers:
         - name: task-manager-api
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: aisalkyn85/task-manager-api:6
+          imagePullPolicy: Always
 
           ports:
             - containerPort: 8080
 
-          # -------- ENVIRONMENT VARIABLES --------
           env:
             - name: SERVER_PORT
               value: "8080"
 
-            # Completely disable Redis auto-configuration
             - name: SPRING_AUTOCONFIGURE_EXCLUDE
-              value: >
-                org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,
-                org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+              value: org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
-          # -------- RESOURCE LIMITS --------
+            - name: MANAGEMENT_HEALTH_REDIS_ENABLED
+              value: "false"
+
           resources:
-            limits:
-              cpu: {{ .Values.resources.limits.cpu }}
-              memory: {{ .Values.resources.limits.memory }}
             requests:
-              cpu: {{ .Values.resources.requests.cpu }}
-              memory: {{ .Values.resources.requests.memory }}
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
 
-          # -------- LIVENESS PROBE --------
           livenessProbe:
             httpGet:
               path: /api/actuator/health
@@ -56,7 +52,6 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
 
-          # -------- READINESS PROBE --------
           readinessProbe:
             httpGet:
               path: /api/actuator/health
