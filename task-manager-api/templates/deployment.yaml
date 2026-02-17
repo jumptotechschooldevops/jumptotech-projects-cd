@@ -2,20 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: task-manager-api
+  namespace: task-app
   labels:
     app: task-manager-api
 spec:
   replicas: 2
-
   selector:
     matchLabels:
       app: task-manager-api
-
   template:
     metadata:
       labels:
         app: task-manager-api
-
     spec:
       containers:
         - name: task-manager-api
@@ -43,21 +41,21 @@ spec:
               cpu: "500m"
               memory: "512Mi"
 
-          livenessProbe:
+          readinessProbe:
             httpGet:
               path: /api/actuator/health
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 5
-            failureThreshold: 3
+            failureThreshold: 5
 
-          readinessProbe:
+          livenessProbe:
             httpGet:
               path: /api/actuator/health
               port: 8080
-            initialDelaySeconds: 50
-            periodSeconds: 15
+            initialDelaySeconds: 90
+            periodSeconds: 30
             timeoutSeconds: 5
-            failureThreshold: 3
+            failureThreshold: 5
 
