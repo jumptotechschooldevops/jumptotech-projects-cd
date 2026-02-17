@@ -26,18 +26,18 @@ spec:
           ports:
             - containerPort: 8080
 
-          # --- Environment Variables ---
+          # -------- ENVIRONMENT VARIABLES --------
           env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: "local"
-
-            # Disable Redis cache in EKS for now
-            - name: SPRING_CACHE_TYPE
-              value: "none"
-
             - name: SERVER_PORT
               value: "8080"
 
+            # Completely disable Redis auto-configuration
+            - name: SPRING_AUTOCONFIGURE_EXCLUDE
+              value: >
+                org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,
+                org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+          # -------- RESOURCE LIMITS --------
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
@@ -46,23 +46,23 @@ spec:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
 
-          # --- Liveness Probe ---
+          # -------- LIVENESS PROBE --------
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /api/actuator/health
               port: 8080
-            initialDelaySeconds: 40
-            periodSeconds: 15
+            initialDelaySeconds: 60
+            periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
 
-          # --- Readiness Probe ---
+          # -------- READINESS PROBE --------
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /api/actuator/health
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 50
+            periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
 
